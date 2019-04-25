@@ -11,9 +11,13 @@ import android.util.Log;
 import android.view.View;
 
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -112,26 +116,25 @@ public class ScreenTime extends AppCompatActivity {
             Log.v("MINUTES: ", "" + column_minutes);
 
 
-            if (column_day == "Sunday") {
+            if (column_day.equals("Sunday")) {
                 sundayC += column_minutes;
                 days.set(0, sundayC);
-            } else if (column_day == "Monday") {
+            } else if (column_day.equals("Monday")) {
                 mondayC += column_minutes;
                 days.set(1, mondayC);
-            } else if (column_day == "Tuesday") {
-                Log.v("TUESDAY C: ", "" + tuesdayC);
+            } else if (column_day.equals("Tuesday")) {
                 tuesdayC += column_minutes;
                 days.set(2, tuesdayC);
             } else if (column_day.equals("Wednesday")) {
                 wednesdayC += column_minutes;
                 days.set(3, wednesdayC);
-            } else if (column_day == "Thursday") {
+            } else if (column_day.equals("Thursday")) {
                 thursdayC += column_minutes;
                 days.set(4, thursdayC);
-            } else if (column_day == "Friday") {
+            } else if (column_day.equals("Friday")) {
                 fridayC += column_minutes;
                 days.set(5, fridayC);
-            } else if (column_day == "Saturday") {
+            } else if (column_day.equals("Saturday")) {
                 saturdayC += column_minutes;
                 days.set(6, saturdayC);
             }
@@ -143,7 +146,7 @@ public class ScreenTime extends AppCompatActivity {
 
     void displayData() {
         BarChart chart = (BarChart) findViewById(R.id.chart);
-        ArrayList<BarEntry> entries = new ArrayList <BarEntry>();
+        ArrayList<BarEntry> entries = new ArrayList <>();
 
         entries.add(new BarEntry(0, days.get(0)));
         entries.add(new BarEntry(1, days.get(1)));
@@ -153,9 +156,36 @@ public class ScreenTime extends AppCompatActivity {
         entries.add(new BarEntry(5, days.get(5)));
         entries.add(new BarEntry(6, days.get(6)));
 
-        BarDataSet dataSet = new BarDataSet(entries, "Label");
-
+        BarDataSet dataSet = new BarDataSet(entries, "Minutes");
         BarData barData = new BarData(dataSet);
+
+        Log.v("BarData: ", "" + barData);
+        Log.v("BarDataSet: ", "" + dataSet);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+
+        final ArrayList<String> xLabels = new ArrayList <>();
+        xLabels.add("Sun");
+        xLabels.add("Mon");
+        xLabels.add("Tues");
+        xLabels.add("Wed");
+        xLabels.add("Thurs");
+        xLabels.add("Fri");
+        xLabels.add("Sat");
+        xAxis.setValueFormatter(new IndexAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                return xLabels.get((int)value);
+            }
+        });
+
+
+        xAxis.setDrawGridLines(false);
+
+        chart.getDescription().setEnabled(false);
+        chart.getLegend().setEnabled(false);
         chart.setData(barData);
         chart.invalidate();
     }
